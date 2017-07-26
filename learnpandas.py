@@ -14,19 +14,24 @@ print(credit_hist)
 print("\nProbability of getting a loan for each Credit History class: ")
 print(p_table)
 
-fig = plt.figure(figsize = (8,4))
+fig = plt.figure(figsize = (12,4))
 
-ax1 = fig.add_subplot(121)
+ax1 = fig.add_subplot(131)
 ax1.set_xlabel('Credit_History')
 ax1.set_ylabel('Count of Applicants')
 ax1.set_title("Applicants by Credit_History")
 credit_hist.plot(ax = ax1, kind = 'bar')
 
-ax2 = fig.add_subplot(122)
+ax2 = fig.add_subplot(132)
 p_table.plot(ax = ax2, kind = 'bar')
 ax2.set_xlabel('Credit_History')
 ax2.set_ylabel('Probability of getting loan')
 ax2.set_title("Probability of getting loan by credit history")
 
-plt.show()
+# Tabulates counts credit_hist x loan_status
+cross_tab = pd.crosstab(df.Credit_History, df.Loan_Status)
 
+ax3 = fig.add_subplot(133)
+cross_tab.plot(ax = ax3, kind = 'bar', stacked = True, color = ['red', 'blue'], grid = False)
+
+plt.show()
