@@ -29,3 +29,4 @@ ax2.set_ylabel('Probability of getting loan')
 ax2.set_title("Probability of getting loan by credit history")
 
 plt.show()
+
