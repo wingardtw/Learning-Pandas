@@ -14,7 +14,9 @@ Exploratory Analysis
 df = pd.read_csv('train.csv')
 
 credit_hist = df.Credit_History.value_counts(ascending = True)
-p_table = df.pivot_table(values = 'Loan_Status', index = ['Credit_History'], aggfunc = lambda x: x.map({'Y':1, 'N':0}).mean())
+p_table = df.pivot_table(values = 'Loan_Status', 
+	                     index = ['Credit_History'], 
+	                     aggfunc = lambda x: x.map({'Y':1, 'N':0}).mean())
 
 print('Frequency Table for Credit History: ')
 print(credit_hist)
@@ -38,12 +40,18 @@ ax2.set_title("Probability of getting loan by credit history")
 
 # Tabulates counts credit_hist x loan_status
 cross_tab = pd.crosstab(df.Credit_History, df.Loan_Status)
-cross_tab.plot(kind = 'bar', stacked = True, color = ['red', 'blue'], grid = False)
+cross_tab.plot(kind = 'bar', 
+			   stacked = True, 
+			   color = ['red', 'blue'], 
+			   grid = False)
 
 cross_tab_2 = pd.crosstab((df.Credit_History, df.Gender), df.Loan_Status)
-cross_tab_2.plot(kind = 'bar', stacked = True, color = ['red', 'blue'], grid = False)
+cross_tab_2.plot(kind = 'bar', 
+	             stacked = True, 
+	             color = ['red', 'blue'], 
+	             grid = False)
 
-#plt.show()
+plt.show()
 
 """
 ========================================================================================
@@ -52,9 +60,27 @@ Data Munging
 ========================================================================================
 
 """
+# print("\nMissing values per column: ")
+# print(df.apply(lambda x: sum(x.isnull()), axis = 0))
 
-print("\nMissing values per column: ")
-print(df.apply(lambda x: sum(x.isnull()), axis = 0))
+# Default Self_Employed to No
+df.Self_Employed.fillna('No', inplace = True)
 
-#print("\nMissing values per row: ")
-#print(df.apply(lambda x: sum(x.isnull()), axis = 1))
+# Pivot Table to store median values for LoanAmounts by SelfEmployed x Education
+table = df.pivot_table(values = 'LoanAmount',
+					   index = 'Self_Employed',
+					   columns = 'Education',
+					   aggfunc = np.median)
+
+# Used to replace LoanAmount Nulls
+def fage(x):
+	return table.loc[x['Self_Employed'],x['Education']]
+df.LoanAmount.fillna(df[df.LoanAmount.isnull()].apply(fage, axis = 1), inplace = True)
+
+# Add a log column to normalize LoanAmount
+df.Log_LoanAmount = np.log(df.LoanAmount)
+
+df.Total_Income = df.ApplicantIncome + df.CoapplicantIncome
+df.Log_Total_Income = np.log(df.Total_Income)
+
+
